@@ -1,0 +1,501 @@
+---
+title: "STA 326 2.0 Programming and Data Analysis with R"
+author: "Kalpa Nipun-AS2018422"
+output: 
+  html_document:
+    code_folding: hide
+    theme:
+      bootswatch: "lux"
+   
+   
+---
+# Introduction
+### Background
+  Namibia, a country in southwest Africa, is distinguished by the Namib Desert along its Atlantic Ocean coast. The country is home to diverse wildlife, including a significant cheetah population. The capital, Windhoek, and coastal town Swakopmund contain German colonial-era buildings such as Windhoek's Christuskirche, built in 1907.\
+  from [wikipedia](https://en.wikipedia.org/wiki/Namibia)
+  
+##### Where is namibia 
+
+
+```{r include=FALSE}
+#importing all the packages
+library(ggplot2)
+library(maptools)
+library(tibble)
+library(tidyverse)
+library(ggrepel)
+library(png)
+library(grid)
+library(sp)
+library(scales)
+library(coronavirus)
+library(showtext)
+library(cowplot)
+library(plotly)
+library(lubridate)
+data(wrld_simpl)
+
+
+
+ # selecting Namibia from the coronavirus dataset
+ data(coronavirus)
+ namibia_corona <- coronavirus %>%
+                    filter(country=="Namibia")
+ 
+p <- ggplot() +
+  geom_polygon(
+    data = wrld_simpl,
+    aes(x = long, y = lat, group = group), fill = "seagreen2", colour = "white"
+  ) +
+  coord_cartesian(xlim = c(-180, 180), ylim = c(-90, 90)) +
+  scale_x_continuous(breaks = seq(-180, 180, 120)) +
+  scale_y_continuous(breaks = seq(-90, 90, 100))
+```
+
+```{r}
+p +
+  geom_point(
+    data = namibia_corona, aes(x = long, y = lat), color = "black", size
+    = 2
+  ) 
+```
+
+##### Geography
+
+At 825,615 km2 (318,772 sq mi), Namibia is the world's thirty-fourth largest country (after Venezuela). It lies mostly between latitudes 17° and 29°S (a small area is north of 17°), and longitudes 11° and 26°E.Being situated between the Namib and the Kalahari deserts, Namibia has the least rainfall of any country in sub-Saharan Africa.The Namibian landscape consists generally of five geographical areas, each with characteristic abiotic conditions and vegetation, with some variation within and overlap between them: the Central Plateau, the Namib, the Great Escarpment, the Bushveld, and the Kalahari Desert.The Namib is a broad expanse of hyper-arid gravel plains and dunes that stretches along Namibia's entire coastline. It varies between 100 and 200 kilometres (60 and 120 mi) in width. Areas within the Namib include the Skeleton Coast and the Kaokoveld in the north and the extensive Namib Sand Sea along the central coast
+
+##### Climate
+
+Namibia extends from 17°S to 25°S latitude: climatically the range of the sub-Tropical High Pressure Belt. Its overall climate description is arid, descending from the Sub-Humid [mean rain above 500 mm (20 in)] through Semi-Arid [between 300 and 500 mm (12 and 20 in)] (embracing most of the waterless Kalahari) and Arid [from 150 to 300 mm (6 to 12 in)] (these three regions are inland from the western escarpment) to the Hyper-Arid coastal plain [less than 100 mm (4 in)]. Temperature maxima are limited by the overall elevation of the entire region: only in the far south, Warmbad for instance, are maxima above 40 °C (100 °F) recorded
+
+##### COVID-19 pandemic in Namibia
+- The Minister of Health and Social Services,  announced on 14 March 2020 that the virus had reached Namibia. A Romanian couple constituted the two first cases and recovered 79 days after their initial diagnosis
+
+- On 17 March 2020, President Hage Geingob declared a state of emergency which introduced measures such as the closure of all borders, suspension of gatherings and economic related resolutions.The Ministry of Health and Social Services also established an Emergency Response team, operating 24/7, which aimed to intensify the surveillance of COVID-19 in the country, especially at the borders of Namibia. On **28 March 2020** , the country went into a **full lockdown.**
+
+- On 31 July, the Health Minister announced a relaxation in quarantine
+
+##### Different stages of lockdown in Namibia from March until the end of the state of emergency.
+- **Stage 1 (28 March 2020 — 4 May 2020)**
+   - Closure of all points of entry.
+   - Restrictions on domestic travel; a permit will be needed for inter-region        travel. Exempted: essential goods transportation.
+   - Public gatherings not allowed; limited to 10 people.
+   - Compulsory quarantine and self-isolation for returning Namibians.
+   - Only essential businesses allowed to operate; other employees to work from       home.
+   - Closure of all schools, tertiary institutions and early childhood                development centres.
+   - Personal movement restricted.
+   - Motor vehicle passenger restrictions.
+   - Sale of alcohol strictly prohibited.
+   
+- **Stage 2 (5 May 2020 — 1 June 2020)**
+   - Closure of all points of entry.
+   - Comprehensive restrictions on cross-border travel. Exempted: essential goods      transportation.
+   - Compulsory quarantine and self-isolation for returning Namibians.
+   - Public allowed to travel between regions/municipalities (except if stated        otherwise).
+   - Motor vehicle passenger restrictions.
+   - Domestic air travel permitted if safety regulations are followed (screening,      disinfecting).
+   - Public gatherings not exceeding 10 people.
+   - All schools and tertiary institutions remain closed - alternate forms of         teaching should be used.
+   - Productive activities across most sectors to reduce given that safety            precautions are met.
+   - Ongoing strengthening of the healthcare system.
+   
+   
+- **Stage 3 (2 June 2020 — 29 June 2020, 13 August — 11 September 2020)**
+   - Closure of all points of entry
+   - Cross-border movement restrictions remain in place. Some exceptions.
+   - Public gatherings and social distancing protocols to be reviewed. Public         gatherings limit: 50 people.
+   - Some high-risk activities (gyms, movie theatres, schools) to reopen with         strict hygiene measures in place.
+   - Restaurants allowed to operate, reservations required.
+   - Sale of alcohol allowed on certain times of the day.
+   - Reduced restrictions for vulnerable persons.
+   
+- **Stage 4 (30 June 2020 — 12 August 2020)**
+   - Points of entry remain closed, except for the transportation of goods. A         targeted International Tourism Revival Initiative will be conducted between      15 July - 15 August 2020 which will look to accommodate a limited number of      tourists into Namibia after this period.
+   - Each person is required to wear a facemask.
+   - Resumption of domestic air travel.
+   - Quarantine protocols remain in place: All Namibians and non-Namibians should      present themselves with a COVID-19 PCR test upon arrival.
+   - Mandatory quarantine and self-isolation for returning citizens - at own          cost.
+   - Public restrictions on gatherings reviewed; public gatherings now allowed        for 250+ persons. Other hygiene measures are still in place: social              distancing, wearing of face masks, strict hand-washing, logbooks etc.            Contact sports may commence.
+   
+##### Infographics
+![](https://pbs.twimg.com/media/EVtB338XYAMd6qJ?format=jpg&name=900x900){width=300px}
+![](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQqmzJtNajAmSgCJn56TUYM2JOU9ORmwOkKHVNOqIjptWNTgHmuI1xhrA5R8_-HHt0apQo&usqp=CAU){width=300px}
+![](https://pbs.twimg.com/media/EVzeq-VWkAA5IWs?format=jpg&name=900x900){width=300px}
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,message = FALSE,comment = NA,warning = FALSE)
+
+```
+
+## **what happend till **
+ overall big picture of covid cases in namibia 
+```{r include=FALSE}
+ 
+ # removing province column because there is no values in it
+ namibia_corona = subset(namibia_corona,select = -c(province))
+ # omitting rows that have a missing value in (cases), because without cases that row is useless for to take (acurate)active cases
+
+# Checking missing values in relevant column 
+ apply(namibia_corona,2,function(col)sum(is.na(col)))
+ namibia_corona_cleaned <- namibia_corona %>% na.omit()
+
+```
+ 
+ 
+```{r include=FALSE}
+ df_current <- namibia_corona_cleaned %>%pivot_wider(names_from = type,values_from = cases) %>%   filter(
+                   between(date,as.Date("2020-01-22"),as.Date("2021-08-04"))
+                    )%>% 
+    mutate(cumulative_confirmed = cumsum(confirmed),
+    total_deaths = cumsum(death),
+    total_recovered = cumsum(recovered),
+    current_active = cumulative_confirmed-total_deaths - total_recovered ) 
+
+                      
+ #active cases til end of 2021-08-04
+ 
+```
+
+```{r}
+current_situation <- df_current %>% summarise(
+   deaths = last(total_deaths)*100/last(cumulative_confirmed),
+   recovered = last(total_recovered)*100/last(cumulative_confirmed),
+   active = last(current_active)*100/last(cumulative_confirmed))
+current_situation <- current_situation %>% pivot_longer(1:3,names_to = "type",values_to = "percentages")   
+
+```
+ 
+ 
+```{r fig.showtext=TRUE,fig.align='center',fig.width=10,fig.height=7}
+
+ggplot(current_situation,aes(x=type,y=percentages,fill=type)) + geom_col() +  scale_y_continuous(breaks = pretty_breaks())   + ylab("As a percentage of total cases") + theme_minimal()  +labs(title = "current situation(End of 2021-08-04 )") 
+
+```
+From this we can see their fatality rate is low,more than 80% of confirmed patients are recovered.But currently active cases are little bit high.\
+
+
+Let's see how their cases through out the dates
+
+```{r include=FALSE}
+
+ df_by_type <- namibia_corona_cleaned %>%
+    pivot_wider(names_from = type,values_from = cases)
+
+ #To fill the missing values of final 4 weeks in recovered_cases, the median of the recovered cases of the last 3 months is used
+ recovered_cases_last_3_months <- df_by_type %>%
+                                 select(date,recovered) %>%
+                          filter(
+                   between(date,as.Date("2021-05-04"),as.Date("2021-08-04"))
+                    )
+ 
+ df_by_type[is.na(df_by_type)] <- 329 
+ df_by_type <- df_by_type %>%
+  mutate(
+    cumulative_confirmed = cumsum(confirmed),
+    cumulative_death = cumsum(death),
+    cumulative_recovered = cumsum(recovered),
+    active = cumulative_confirmed-cumulative_death- cumulative_recovered
+  )
+ 
+
+```
+
+```{r include=FALSE}
+#plotting the types wrt date
+p_type <- function(y,title,color){
+    ggplot(df_by_type,aes(x=date,y=y)) + geom_col(fill=color) +  scale_x_date(date_labels ="%b",date_breaks = "months") + scale_y_log10() + theme_minimal()+ theme(legend.position="none") +labs(title=title  ,y=NULL)
+ 
+}
+
+```
+
+```{r fig.showtext=TRUE,fig.align='center',fig.width=10,fig.height=7}
+plt <- subplot(p_type(df_by_type$confirmed,"confirmed","deepskyblue4"),
+             p_type(df_by_type$active,"active","green3"),
+             p_type(df_by_type$death,"death","red4"),
+             p_type(df_by_type$recovered,"recovered","tan"),
+             nrows = 4,shareX = TRUE)
+            
+  plt %>% layout(title = list(text = "Cases over type"),annotations = list(
+    list(x = 0.2 , y = 1.05, text = "Confirmed", showarrow = F, xref='paper',               yref='paper'),
+    list(x = 0.2 , y = 0.75, text = "active", showarrow = F, xref='paper',               yref='paper'),
+     list(x = 0.2 , y = 0.45, text = "death", showarrow = F, xref='paper',               yref='paper'),
+    list(x = 0.2 , y = 0.15, text = "Recovered", showarrow = F, xref='paper',               yref='paper')
+    )
+     )
+```
+we can see that with the time all cases began to spike.
+
+##### Let's check what happend in the lockdown periods 
+
+ 
+```{r include=FALSE}
+df_by_cases <- df_by_type %>% 
+     select(date,confirmed,death,recovered,active) 
+df_by_cases <- df_by_cases %>% 
+               pivot_longer(
+                   cols = c("confirmed","death","recovered","active"),
+                   names_to = "type",
+                   values_to = "cases"
+               )
+```
+
+
+```{r include=FALSE}
+# subset of lockdown periods
+ stage1_pre_lockdown <- df_by_cases  %>%
+           
+            filter(
+               between(date,as.Date("2020-01-22"),as.Date("2020-03-27"))
+            )
+stage1_lockdown <- df_by_cases %>%
+            
+            filter(
+               between(date,as.Date("2020-03-28"),as.Date("2020-09-11"))
+            )
+stage1_post_lockdown <- df_by_cases %>%
+           
+            filter(
+               between(date,as.Date("2020-09-12"),as.Date("2020-12-1"))
+            )
+
+```
+
+```{r}
+#creating a function plot the graphs 
+stage1_plot <- function(df,title){
+   ggplot(df,aes(date,cases,color=type)) + geom_line() + facet_wrap(~type,ncol=1,scales = "free_y") +theme(legend.position="none")+labs(title = title) 
+}
+
+```
+
+#### Stage 1
+```{r fig.showtext=TRUE,fig.align='center',fig.width=10,fig.height=7}
+plot_grid(stage1_plot(stage1_pre_lockdown,"pre_lockdown"),stage1_plot(stage1_lockdown,"lockdown"),stage1_plot(stage1_post_lockdown,"post_lockdown"),nrow = 1)
+
+```
+we can see that after the lock down there is a significant drop in the active cases
+
+There were no major Lock downs in 2021 according to the sources, so Let's check what happend in 2021
+```{r fig.showtext=TRUE,fig.align='center',fig.width=10,fig.height=7}
+ year_2021 <- df_by_type  %>%
+            filter(
+               between(date,as.Date("2021-01-01"),as.Date("2021-09-18"))
+            )
+ year_2021_active <- ggplot(year_2021,aes(date,active)) + geom_line(color="slateblue4")+labs(title= "active cases 2021")+scale_x_date(date_labels ="%b",date_breaks = "months") 
+ 
+ ggplotly(year_2021_active)
+```
+We can see there is a major spike in active cases in the july ,Let's check death cases
+
+```{r fig.showtext=TRUE,fig.align='center',fig.width=10,fig.height=7}
+ year_2021_death <- ggplot(year_2021,aes(date,death)) + geom_line(color="red4")+labs(title= "deaths in 2021")+scale_x_date(date_labels ="%b",date_breaks = "months") 
+ 
+ ggplotly(year_2021_death)
+```
+There is a huge spike in deaths,also in july. we can see that July was a critical month .and there were no lock downs in that period !!!
+
+##### Let's check averages
+```{r fig.showtext=TRUE,fig.align='center',fig.width=10,fig.height=7}
+ plt_avg_con <- ggplot(df_by_type,aes(x=date,y=confirmed,colour = confirmed >209)) + geom_col() +  scale_x_date(date_labels ="%m",date_breaks = "months")  + theme_light() +labs(title="Average of confirmed cases is 209"  ,y="cases") + geom_hline(yintercept = mean(df_by_type$confirmed),color="blue")+scale_colour_manual(name = 'Above Avg', values = setNames(c('springgreen1','snow3'),c(T, F)))
+
+ ggplotly(plt_avg_con)
+ 
+
+
+```
+we can see that from may-2021 to September-2021, total no:of confirmed cases are so high comparing to other months
+
+
+```{r fig.showtext=TRUE,fig.align='center',fig.width=10,fig.height=7}
+plt_avg_act <- ggplot(df_by_type,aes(x=date,y=active,colour = active >4234)) + geom_step() +  scale_x_date(date_labels ="%m",date_breaks = "months")  + theme_light() +labs(title="Average of active cases is 4232"  ,y="cases") + geom_hline(yintercept = mean(df_by_type$active),color="blue")+scale_colour_manual(name ='Above Avg', values = setNames(c('springgreen1','snow3'),c(T, F)))
+
+ ggplotly(plt_avg_act)
+```
+**From above charts we can see that the critical time for Namibia is began  in the end of June in 2021**
+
+We can see that their first Lock down was very effective .The Active cases began to drop also deaths, 
+
+### Let's Compare NAMIBIA with  other countries around it 
+```{r include= FALSE}
+data(coronavirus)
+target <- c("Angola","Zambia","Zimbabwe","South Africa","Namibia","Botswana")
+ africa_corona <- coronavirus %>%
+                    filter(country %in% target) %>%
+                    select(date,country,type,cases)
+```
+
+```{r}
+ africa_by_type <- africa_corona %>%
+    pivot_wider(names_from = type,values_from = cases)
+ 
+  africa_by_type <- africa_by_type %>%
+                   group_by(country) %>%
+                   arrange(country,date)
+## Fixing minus values
+  africa_by_type$confirmed <- abs(africa_by_type$confirmed)
+  africa_by_type$death <- abs(africa_by_type$death)
+  africa_by_type$recovered <- abs(africa_by_type$recovered)
+  
+## Getting cumalative sums
+africa_by_type <- africa_by_type %>%
+   mutate(cu_confirmed = cumsum(confirmed),
+          cu_death = cumsum(death),
+          cu_recovered = cumsum(recovered)
+          )%>%
+   filter(cu_confirmed >50) %>%
+   mutate(days_elapsed = date - min(date))
+
+```
+
+```{r fig.showtext=TRUE,fig.align='center',fig.width=10,fig.height=7}
+
+fig <- ggplot(africa_by_type,aes(days_elapsed,cu_confirmed,color=country,group = country)) + geom_line()+theme_minimal()+scale_y_log10()+labs(x="Days since 50th confirmed case", y="Cumulative Number of Recovered (log scale)",title = "Cumulative Confirmed cases from african Countries")
+
+ ggplotly(fig) 
+    
+```
+we can see that in the beginning Namibia's confirmed cases are high comparing to other countires .but after some time they managed to keep situation under control.
+
+```{r}
+africa_by_country<- africa_corona %>%
+    pivot_wider(names_from = country,values_from = cases) 
+
+```
+
+
+```{r include=FALSE}
+ 
+  # In the data set the missing values are  from recovered cases in the same months in every country so it's okay to omit them
+africa_by_type <- africa_by_type %>% na.omit()
+ apply(africa_by_type,2,function(col)sum(is.na(col)))
+ 
+```
+
+
+```{r fig.showtext=TRUE,fig.align='center',fig.width=10,fig.height=7}
+plot4 <- ggplot(africa_by_type,aes(cu_confirmed,cu_recovered,color=country,group = country)) + geom_line()+theme_minimal()+scale_y_log10()+scale_x_log10()+labs(x=" confirmed cases(log scale)", y="Recovered cases (log scale)",title = "confirmed cases vs recovered cases")+geom_abline()
+ggplotly(plot4) 
+
+```
+we can see that Namibia came close to confirmed vs recovered 1:1 ratio,that means in Namibia most of confirmed patients are recovered 
+
+
+
+##### Vaccination
+
+```{r include=FALSE}
+Namibia_cases <- coronavirus %>% 
+  filter(country == "Namibia", 
+         type == "confirmed") %>%
+  arrange(date) %>%
+  select(date, cases) %>%
+  left_join(
+    covid19_vaccine %>% 
+      filter(country_region == "Namibia") %>%
+      select(date, people_fully_vaccinated),
+    by = "date")
+
+Namibia_cases <- Namibia_cases %>%
+  mutate(cases_normalized = (cases - min(cases)) / (max(cases) - min(cases)),
+         people_fully_vaccinated_normilized = (people_fully_vaccinated - min(people_fully_vaccinated, na.rm = TRUE)) / 
+           (max(people_fully_vaccinated, na.rm = TRUE) - 
+              min(people_fully_vaccinated, na.rm = TRUE)))
+```
+
+
+```{r fig.showtext=TRUE,fig.align='center',fig.width=10,fig.height=7}
+plot_ly(data =Namibia_cases,
+        x = ~ date,
+        y = ~ cases_normalized,
+        type = "scatter",
+        mode = "line",
+        name = "Daily Cases (Normalized)") %>%
+  add_lines(x = ~ date,
+            y = ~ people_fully_vaccinated_normilized,
+            name = "Fully Vaccinated - Aggregate (Normalized)") %>%
+  layout(title = "Namibian - Daily New Cases vs. Total Vaccinated Population (Normalized)",
+         legend = list(orientation = 'h'),
+         yaxis = list(title = "Normalized Daily Cases/Total Vaccinated"),
+         xaxis = list(title = ""),
+         margin = list(b = 60))
+```
+We can see that after the vaccination daily cases began to drop.we can conclude that vaccination was effective at the time.
+
+
+##### How vaccination done around African continent
+```{r include=FALSE}
+data("covid19_vaccine")
+df <- covid19_vaccine %>% 
+  filter(date == max(date),
+         !is.na(population)) 
+
+df <- df %>% 
+  mutate(fully_vaccinated_ratio = people_fully_vaccinated / population) %>%
+  arrange(- fully_vaccinated_ratio)
+
+continent_df <- df %>%
+  filter(!is.na(continent_name),
+         !is.na(fully_vaccinated_ratio))
+table(continent_df$continent_name)
+
+
+```
+
+```{r fig.showtext=TRUE,fig.align='center',fig.width=10,fig.height=7}
+
+d <- continent_df %>% 
+    filter(continent_name == "Africa") %>% 
+     slice_head(n = 20) %>%
+    arrange(fully_vaccinated_ratio) %>%
+    mutate(country = factor(country_region, levels = country_region))
+
+ plot_ly(data = d,
+          y = ~ country,
+          x = ~ round(100 * fully_vaccinated_ratio, 2),
+          text = ~ paste(round(100 * fully_vaccinated_ratio, 1), "%"),
+        textposition = 'auto',
+          orientation = "h",
+          showlegend = FALSE,
+         
+          type = "bar") %>%
+    layout(title = "Percentage of Fully Vaccineted Population by Continent and Country",
+           yaxis = list(title = ""),
+           xaxis = list(title = "Percentage", ticksuffix = "%")) 
+ 
+  
+```
+Top 20 vaccinated countries in African continent.Namibia Vaccinated only for 5.59% of total population.
+
+### Conclusions
+- In the past year Namibia kept the situation under control ,the fatality rate also low in that year(2020)
+- But when it comes to end of June in 2021 their overall cases from each type began to rise.
+- After the major lock down in 2020(stage 1) we can see that their active cases droped.That means their Lock down was successful.They Managed to keep total deaths low as possible in 2020. 
+- From the Average active cases plot we can see that in the end of June there is a huge spike in the active cases.We can conclude that they didn't  handle the 
+situation very well in beginning of 2021
+- As to reliable sources  Namibian government is pushing more regulations to country right now .so we can see a drop in the active cases to the current date. 
+- Comparing to the other countries in Africa we can see that they did well keeping the fatality rate low.
+
+### Discussion
+- There were 45 missing values in the Recovered case .That missing values are from the  August and September months in 2021 only.
+- So the decisions on "what should i do to NA values" are taken based on the analysis part.In some cases They were ommited and some cases they were filled etc.
+
+### Limitations
+- As per the data set there were no information about the states in Namibia.so the analysis part did based on the whole country.
+
+### References 
+- https://en.wikipedia.org/wiki/COVID-19_pandemic_in_Namibia
+
+- "Namibia declares State of Emergency due to COVID-19 | United Nations in Namibia". namibia.un.org. Retrieved 15 June 2020.
+https://namibia.un.org/en/38970-namibia-declares-state-emergency-due-covid-19
+
+- https://graphics.reuters.com/world-coronavirus-tracker-and-maps/countries-and-territories/namibia/
+
+- All the Details about the lockdown and regulations in namibia http://www.lac.org.na/laws/COVID-19_Stage_4_graphics.pdf
+
+- https://www.bbc.com/news/topics/clm1wxp5pret/namibia
+
+- https://wwwnc.cdc.gov/travel/notices/covid-4/coronavirus-namibia
+
+
